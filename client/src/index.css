@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@layer components {
+  .tool-label {
+    @apply block text-[11px] font-medium text-slate-600 mb-1;
+  }
+
+  .tool-input {
+    @apply w-full px-2.5 py-1.5 text-xs text-slate-800
+           bg-white border border-slate-200 rounded-md
+           outline-none transition-colors
+           placeholder:text-slate-400
+           focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10;
+  }
+}

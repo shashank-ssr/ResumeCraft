@@ -1,0 +1,6 @@
+{
+  "name": "ResumeCraft",
+  "description": "Build a Resume That Gets Noticed. Choose a professional template, customize every section, live preview, and download your resume for free.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
