@@ -1,79 +1,85 @@
-import express from 'express';
-import path from 'path';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { createServer as createViteServer } from 'vite';
-
-import { registerHandler, loginHandler, meHandler, authenticateToken } from './server/auth';
-import {
-  getResumesHandler,
-  getResumeByIdHandler,
-  createResumeHandler,
-  updateResumeHandler,
-  deleteResumeHandler,
-  duplicateResumeHandler
-} from './server/resumes';
-import { suggestSummaryHandler, enhanceBulletsHandler } from './server/ai';
+const dotenv = require("dotenv");
 
 dotenv.config();
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+const express = require("express");
+const cors = require("cors");
+const connectDB = require("./config/db");
+const aiRoutes = require("./routes/aiRoutes");
 
-  // Middlewares
-  app.use(cors());
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+console.log(
+  "Gemini API key loaded:",
+  process.env.GEMINI_API_KEY ? "YES" : "NO"
+);
 
-  // API Routes
-  const apiRouter = express.Router();
+connectDB();
 
-  // Health check
-  apiRouter.get('/health', (req, res) => {
-    res.json({ success: true, status: 'ok', timestamp: new Date().toISOString() });
+const app = express();
+
+const PORT = process.env.PORT || 5000;
+
+// ========================================
+// Middleware
+// ========================================
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ========================================
+// Health Check
+// ========================================
+
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "ResumeCraft API is running",
   });
+});
 
-  // Auth Routes
-  apiRouter.post('/auth/register', registerHandler);
-  apiRouter.post('/auth/login', loginHandler);
-  apiRouter.get('/auth/me', authenticateToken, meHandler);
+// ========================================
+// API Routes
+// ========================================
 
-  // Resume Routes
-  apiRouter.get('/resumes', authenticateToken, getResumesHandler);
-  apiRouter.post('/resumes', authenticateToken, createResumeHandler);
-  apiRouter.get('/resumes/:id', getResumeByIdHandler);
-  apiRouter.put('/resumes/:id', authenticateToken, updateResumeHandler);
-  apiRouter.delete('/resumes/:id', authenticateToken, deleteResumeHandler);
-  apiRouter.post('/resumes/:id/duplicate', authenticateToken, duplicateResumeHandler);
+app.use("/api/ai", aiRoutes);
 
-  // AI Assistant Routes
-  apiRouter.post('/ai/suggest-summary', suggestSummaryHandler);
-  apiRouter.post('/ai/enhance-bullets', enhanceBulletsHandler);
+// ========================================
+// 404 Handler
+// ========================================
 
-  app.use('/api', apiRouter);
-
-  // Vite middleware in non-production
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
-  }
-
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`ResumeCraft server running on http://0.0.0.0:${PORT}`);
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
   });
-}
+});
 
-startServer().catch((err) => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
+// ========================================
+// Error Handler
+// ========================================
+
+app.use((err, req, res, next) => {
+  console.error("Server Error:", err);
+
+  res.status(err.status || 500).json({
+    success: false,
+    message:
+      err.message || "Internal server error",
+  });
+});
+
+// ========================================
+// Start Server
+// ========================================
+
+app.listen(PORT, () => {
+  console.log(
+    `ResumeCraft server running on http://localhost:${PORT}`
+  );
 });

@@ -1,0 +1,42 @@
+.resume-editor {
+  width: 100%;
+}
+
+.resume-editor__header {
+  margin-bottom: 24px;
+}
+
+.resume-editor__eyebrow {
+  display: inline-block;
+  margin-bottom: 7px;
+
+  color: #2563eb;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.resume-editor__header h1 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 1.65rem;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.resume-editor__header p {
+  max-width: 650px;
+  margin: 8px 0 0;
+
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.resume-editor__sections {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}

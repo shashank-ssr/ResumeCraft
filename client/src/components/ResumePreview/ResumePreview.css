@@ -1,0 +1,296 @@
+.resume-preview-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.resume-preview {
+  width: 794px;
+  min-height: 1123px;
+
+  padding: 52px 58px;
+
+  background: #ffffff;
+  color: #1f2937;
+
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.12),
+    0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.resume-preview__header {
+  padding-bottom: 22px;
+  border-bottom: 2px solid #111827;
+}
+
+.resume-preview__header h1 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 30px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.resume-preview__header h2 {
+  margin: 6px 0 14px;
+
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.resume-preview__contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 14px;
+}
+
+.resume-preview__contact span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  color: #4b5563;
+  font-size: 9px;
+}
+
+.resume-preview__section {
+  padding-top: 20px;
+}
+
+.resume-preview__section h3 {
+  margin: 0 0 9px;
+
+  color: #111827;
+  font-size: 11px;
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.resume-preview__placeholder {
+  margin: 0;
+
+  color: #9ca3af;
+  font-size: 9px;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+@media (max-width: 1000px) {
+  .resume-preview {
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 700px) {
+  .resume-preview {
+    width: 100%;
+    min-height: auto;
+    padding: 35px 28px;
+  }
+}
+
+.preview-experience-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.preview-experience {
+  break-inside: avoid;
+}
+
+.preview-experience__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.preview-experience__top h4 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.preview-experience__top p {
+  margin: 3px 0 0;
+
+  color: #4b5563;
+  font-size: 9px;
+}
+
+.preview-experience__top > span {
+  flex-shrink: 0;
+
+  color: #6b7280;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.preview-experience__description {
+  margin: 7px 0 0;
+
+  color: #4b5563;
+  font-size: 8.5px;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.preview-education-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.preview-education {
+  break-inside: avoid;
+}
+
+.preview-education__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.preview-education__top h4 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.preview-education__top p {
+  margin: 3px 0 0;
+
+  color: #4b5563;
+  font-size: 9px;
+}
+
+.preview-education__top > span {
+  flex-shrink: 0;
+
+  color: #6b7280;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.preview-education__grade {
+  margin: 5px 0 0;
+
+  color: #2563eb;
+  font-size: 8.5px;
+  font-weight: 600;
+}
+
+.preview-education__description {
+  margin: 5px 0 0;
+
+  color: #4b5563;
+  font-size: 8.5px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.preview-project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.preview-project {
+  break-inside: avoid;
+}
+
+.preview-project__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.preview-project__top h4 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.preview-project__technologies {
+  margin: 3px 0 0;
+
+  color: #2563eb;
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.preview-project__link {
+  flex-shrink: 0;
+
+  max-width: 150px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #6b7280;
+  font-size: 7.5px;
+}
+
+.preview-project__description {
+  margin: 6px 0 0;
+
+  color: #4b5563;
+  font-size: 8.5px;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.preview-skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.preview-skill-group {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+
+  font-size: 8.5px;
+  line-height: 1.5;
+}
+
+.preview-skill-group strong {
+  flex-shrink: 0;
+
+  color: #111827;
+  font-weight: 700;
+}
+
+.preview-skill-group span {
+  color: #4b5563;
+}
+
+.resume-preview__summary {
+  margin: 0;
+
+  color: #374151;
+
+  font-size: 8.5px;
+
+  line-height: 1.6;
+
+  white-space: pre-line;
+
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,284 @@
+.home {
+  min-height: calc(100vh - 72px);
+  overflow: hidden;
+}
+
+.hero {
+  width: min(1200px, calc(100% - 40px));
+  min-height: calc(100vh - 72px);
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: 70px;
+  padding: 70px 0;
+}
+
+.hero__content {
+  max-width: 650px;
+}
+
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 13px;
+  margin-bottom: 24px;
+
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.hero h1 {
+  margin: 0;
+
+  color: #111827;
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+  font-weight: 800;
+}
+
+.hero h1 span {
+  color: #2563eb;
+}
+
+.hero__content > p {
+  max-width: 580px;
+  margin: 28px 0 0;
+
+  color: #6b7280;
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.hero__primary,
+.hero__secondary {
+  padding: 14px 21px;
+  border-radius: 11px;
+
+  text-decoration: none;
+  font-weight: 650;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.hero__primary {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 12px 25px rgba(37, 99, 235, 0.2);
+}
+
+.hero__primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.hero__secondary {
+  border: 1px solid #d1d5db;
+  color: #374151;
+  background: white;
+}
+
+.hero__secondary:hover {
+  background: #f9fafb;
+  transform: translateY(-2px);
+}
+
+.hero__features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 24px;
+  margin-top: 34px;
+}
+
+.hero__features div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #6b7280;
+  font-size: 0.82rem;
+}
+
+.hero__features svg {
+  color: #2563eb;
+}
+
+.hero__visual {
+  display: flex;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.resume-card {
+  width: min(430px, 100%);
+  min-height: 570px;
+
+  padding: 30px;
+
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  box-shadow:
+    0 30px 70px rgba(15, 23, 42, 0.12),
+    0 10px 25px rgba(15, 23, 42, 0.06);
+
+  transform: rotate(2deg);
+}
+
+.resume-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding-bottom: 25px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.resume-card__avatar {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: #dbeafe;
+}
+
+.skeleton {
+  width: 100%;
+  height: 7px;
+  margin-top: 9px;
+  border-radius: 4px;
+  background: #e5e7eb;
+}
+
+.skeleton--name {
+  width: 170px;
+  height: 14px;
+  margin-top: 0;
+  background: #1f2937;
+}
+
+.skeleton--subtitle {
+  width: 120px;
+}
+
+.skeleton--short {
+  width: 65%;
+}
+
+.skeleton--heading {
+  width: 95px;
+  height: 9px;
+  margin-top: 0;
+  margin-bottom: 14px;
+  background: #2563eb;
+}
+
+.resume-card__section {
+  padding: 24px 0;
+}
+
+.resume-card__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.resume-card__skills span {
+  padding: 5px 9px;
+  border-radius: 6px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.resume-card__ai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 5px;
+  padding: 12px;
+
+  border-radius: 9px;
+
+  background: #f5f3ff;
+  color: #7c3aed;
+
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.resume-card__ai svg:last-child {
+  margin-left: auto;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 50px;
+    padding: 55px 0;
+  }
+
+  .hero__content {
+    max-width: 700px;
+  }
+
+  .hero__visual {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    width: min(100% - 24px, 1200px);
+    padding: 40px 0;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+  }
+
+  .hero__content > p {
+    font-size: 0.98rem;
+  }
+
+  .hero__features {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .resume-card {
+    min-height: 500px;
+    padding: 22px;
+    transform: none;
+  }
+}

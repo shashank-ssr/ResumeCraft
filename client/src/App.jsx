@@ -1,57 +1,33 @@
-import React, { useState } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ResumeProvider } from './context/ResumeContext';
-import { Navbar } from './components/common/Navbar';
-import { Footer } from './components/common/Footer';
-import { LandingPage } from './components/home/LandingPage';
-import { ResumeEditor } from './components/editor/ResumeEditor';
-import { TemplateGallery } from './components/templates/TemplateGallery';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-export function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+import Navbar from "./components/Navbar/Navbar";
+import Home from "./pages/Home/Home";
+import Builder from "./pages/Builder/Builder";
 
+function Templates() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <ResumeProvider>
-          <div className="min-h-screen flex flex-col font-sans bg-slate-100 text-slate-800 antialiased selection:bg-blue-500 selection:text-white">
-
-            <Navbar
-              currentPage={currentPage}
-              onNavigate={(page) => setCurrentPage(page)}
-            />
-
-            <main className="flex-1">
-              {currentPage === 'home' && (
-                <LandingPage
-                  onStartBuilding={() => setCurrentPage('editor')}
-                  onBrowseTemplates={() => setCurrentPage('templates')}
-                />
-              )}
-
-              {currentPage === 'templates' && (
-                <TemplateGallery
-                  onSelectTemplate={() => setCurrentPage('editor')}
-                />
-              )}
-
-              {currentPage === 'editor' && (
-                <ResumeEditor
-                  onNavigateToTemplates={() => setCurrentPage('templates')}
-                />
-              )}
-            </main>
-
-            <Footer
-              onNavigate={(page) => setCurrentPage(page)}
-            />
-
-          </div>
-        </ResumeProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <main
+      style={{
+        minHeight: "calc(100vh - 72px)",
+        display: "grid",
+        placeItems: "center",
+      }}
+    >
+      <h1>Templates</h1>
+    </main>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Navbar />
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/builder" element={<Builder />} />
+        <Route path="/templates" element={<Templates />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}

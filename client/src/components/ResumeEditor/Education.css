@@ -1,0 +1,84 @@
+.education-section {
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.education-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.education-card {
+  padding: 20px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 11px;
+
+  background: #fafafa;
+}
+
+.education-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.education-card__number {
+  color: #374151;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.education-card input[type="text"],
+.education-card input[type="month"],
+.education-card textarea {
+  width: 100%;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+  color: #111827;
+
+  font-size: 0.9rem;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.education-card input[type="text"],
+.education-card input[type="month"] {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.education-card textarea {
+  display: block;
+  padding: 11px 12px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.education-card input:focus,
+.education-card textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+@media (max-width: 650px) {
+  .education-section {
+    padding: 18px;
+  }
+
+  .education-card {
+    padding: 16px;
+  }
+}
