@@ -1,0 +1,166 @@
+.footer {
+    margin-top: 40px;
+
+    background: #111827;
+    color: #ffffff;
+}
+
+.footer__container {
+    width: min(1200px, calc(100% - 40px));
+    margin: 0 auto;
+}
+
+/* ========================================
+   MAIN
+======================================== */
+
+.footer__main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 40px;
+
+    padding: 28px 0;
+}
+
+.footer__brand {
+    max-width: 330px;
+}
+
+.footer__logo {
+    display: inline-block;
+
+    margin-bottom: 6px;
+
+    color: #ffffff;
+
+    font-size: 1rem;
+    font-weight: 800;
+
+    letter-spacing: -0.03em;
+
+    text-decoration: none;
+}
+
+.footer__logo span {
+    color: #60a5fa;
+}
+
+.footer__brand p {
+    margin: 0;
+
+    color: #9ca3af;
+
+    font-size: 0.72rem;
+
+    line-height: 1.5;
+}
+
+/* ========================================
+   LINKS
+======================================== */
+
+.footer__links {
+    display: flex;
+    gap: 45px;
+}
+
+.footer__column {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+
+    min-width: 100px;
+}
+
+.footer__column h3 {
+    margin: 0 0 3px;
+
+    color: #ffffff;
+
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.footer__column a {
+    color: #9ca3af;
+
+    font-size: 0.7rem;
+
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.footer__column a:hover {
+    color: #ffffff;
+}
+
+/* ========================================
+   BOTTOM
+======================================== */
+
+.footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 12px 0;
+
+    border-top: 1px solid #1f2937;
+}
+
+.footer__bottom p,
+.footer__bottom span {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 0.65rem;
+}
+
+.footer__bottom span {
+    color: #9ca3af;
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 650px) {
+    .footer {
+        margin-top: 30px;
+    }
+
+    .footer__container {
+        width: calc(100% - 28px);
+    }
+
+    .footer__main {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 20px;
+
+        padding: 24px 0;
+    }
+
+    .footer__links {
+        gap: 35px;
+    }
+
+    .footer__bottom {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 4px;
+
+        padding: 10px 0;
+    }
+}

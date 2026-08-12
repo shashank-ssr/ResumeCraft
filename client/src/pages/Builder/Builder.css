@@ -58,3 +58,122 @@
     padding-top: 20px;
   }
 }
+
+/* ========================================
+   BUILDER DOWNLOAD
+======================================== */
+
+.builder-download {
+    width: min(1500px, calc(100% - 40px));
+
+    margin: 32px auto 40px;
+
+    padding: 18px 22px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    box-shadow:
+        0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.builder-download__content {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.builder-download h2 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 0.95rem;
+    font-weight: 750;
+}
+
+.builder-download p {
+    margin: 4px 0 0;
+
+    color: #6b7280;
+
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.builder-download__button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 42px;
+
+    padding: 0 18px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 0.82rem;
+    font-weight: 650;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.builder-download__button:hover:not(:disabled) {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(37, 99, 235, 0.2);
+}
+
+.builder-download__button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.builder-download__button:disabled {
+    cursor: wait;
+
+    opacity: 0.65;
+}
+
+@media (max-width: 700px) {
+    .builder-download {
+        width: calc(100% - 28px);
+
+        margin-top: 24px;
+    }
+
+    .builder-download__content {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .builder-download__button {
+        width: 100%;
+    }
+}

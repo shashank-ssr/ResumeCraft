@@ -1,5 +1,17 @@
-import { Plus, Trash2 } from "lucide-react";
+import {
+  Check,
+  LoaderCircle,
+  Plus,
+  Sparkles,
+  Trash2,
+  X,
+} from "lucide-react";
+
+import { useState } from "react";
+
 import { useResume } from "../../context/ResumeContext";
+import { generateAIContent } from "../../services/aiService";
+
 import "./Experience.css";
 
 const createExperience = () => ({
@@ -18,6 +30,14 @@ export default function Experience() {
 
   const experiences = resume.experience;
 
+  const [generatingId, setGeneratingId] =
+    useState(null);
+
+  const [generatedContent, setGeneratedContent] =
+    useState({});
+
+  const [errors, setErrors] = useState({});
+
   const addExperience = () => {
     updateResume("experience", [
       ...experiences,
@@ -28,11 +48,30 @@ export default function Experience() {
   const removeExperience = (id) => {
     updateResume(
       "experience",
-      experiences.filter((experience) => experience.id !== id)
+      experiences.filter(
+        (experience) =>
+          experience.id !== id
+      )
     );
+
+    setGeneratedContent((previous) => {
+      const updated = { ...previous };
+      delete updated[id];
+      return updated;
+    });
+
+    setErrors((previous) => {
+      const updated = { ...previous };
+      delete updated[id];
+      return updated;
+    });
   };
 
-  const updateExperience = (id, field, value) => {
+  const updateExperience = (
+    id,
+    field,
+    value
+  ) => {
     updateResume(
       "experience",
       experiences.map((experience) =>
@@ -46,13 +85,109 @@ export default function Experience() {
     );
   };
 
+  const handleGenerateAI = async (
+    experience
+  ) => {
+    try {
+      setGeneratingId(experience.id);
+
+      setErrors((previous) => ({
+        ...previous,
+        [experience.id]: "",
+      }));
+
+      const result =
+        await generateAIContent({
+          type: "experience",
+
+          resume,
+
+          input: `
+Job Title: ${experience.jobTitle}
+
+Company: ${experience.company}
+
+Location: ${experience.location}
+
+Start Date: ${experience.startDate}
+
+End Date: ${
+            experience.currentlyWorking
+              ? "Present"
+              : experience.endDate
+          }
+
+Current Description:
+${experience.description}
+
+Improve this work experience into strong,
+professional, ATS-friendly resume bullet points.
+          `,
+        });
+
+      setGeneratedContent((previous) => ({
+        ...previous,
+        [experience.id]: result,
+      }));
+    } catch (error) {
+      console.error(
+        "Experience AI generation failed:",
+        error
+      );
+
+      setErrors((previous) => ({
+        ...previous,
+        [experience.id]:
+          error.message ||
+          "Unable to generate content.",
+      }));
+    } finally {
+      setGeneratingId(null);
+    }
+  };
+
+  const handleUseGenerated = (
+    experienceId
+  ) => {
+    const content =
+      generatedContent[experienceId];
+
+    if (!content) {
+      return;
+    }
+
+    updateExperience(
+      experienceId,
+      "description",
+      content
+    );
+
+    setGeneratedContent((previous) => {
+      const updated = { ...previous };
+      delete updated[experienceId];
+      return updated;
+    });
+  };
+
+  const handleCancelGenerated = (
+    experienceId
+  ) => {
+    setGeneratedContent((previous) => {
+      const updated = { ...previous };
+      delete updated[experienceId];
+      return updated;
+    });
+  };
+
   return (
     <section className="experience-section">
       <div className="section-header section-header--row">
         <div>
           <h2>Work Experience</h2>
+
           <p>
-            Add your relevant work experience, internships, or freelance work.
+            Add your relevant work experience,
+            internships, or freelance work.
           </p>
         </div>
 
@@ -62,6 +197,7 @@ export default function Experience() {
           onClick={addExperience}
         >
           <Plus size={17} />
+
           Add Experience
         </button>
       </div>
@@ -75,7 +211,9 @@ export default function Experience() {
           <h3>No experience added yet</h3>
 
           <p>
-            Add your work experience or internship to strengthen your resume.
+            Add your work experience or
+            internship to strengthen your
+            resume.
           </p>
 
           <button
@@ -89,151 +227,302 @@ export default function Experience() {
       )}
 
       <div className="experience-list">
-        {experiences.map((experience, index) => (
-          <div className="experience-card" key={experience.id}>
-            <div className="experience-card__header">
-              <div>
-                <span className="experience-card__number">
-                  Experience {index + 1}
-                </span>
-              </div>
+        {experiences.map(
+          (experience, index) => {
+            const isGenerating =
+              generatingId ===
+              experience.id;
 
-              <button
-                type="button"
-                className="delete-button"
-                onClick={() => removeExperience(experience.id)}
-                aria-label="Delete experience"
+            const generated =
+              generatedContent[
+                experience.id
+              ];
+
+            const error =
+              errors[experience.id];
+
+            return (
+              <div
+                className="experience-card"
+                key={experience.id}
               >
-                <Trash2 size={17} />
-              </button>
-            </div>
+                <div className="experience-card__header">
+                  <div>
+                    <span className="experience-card__number">
+                      Experience {index + 1}
+                    </span>
+                  </div>
 
-            <div className="form-grid">
-              <div className="form-field form-field--full">
-                <label>Job Title</label>
-
-                <input
-                  type="text"
-                  placeholder="e.g. Frontend Developer"
-                  value={experience.jobTitle}
-                  onChange={(event) =>
-                    updateExperience(
-                      experience.id,
-                      "jobTitle",
-                      event.target.value
-                    )
-                  }
-                />
-              </div>
-
-              <div className="form-field">
-                <label>Company</label>
-
-                <input
-                  type="text"
-                  placeholder="e.g. ABC Technologies"
-                  value={experience.company}
-                  onChange={(event) =>
-                    updateExperience(
-                      experience.id,
-                      "company",
-                      event.target.value
-                    )
-                  }
-                />
-              </div>
-
-              <div className="form-field">
-                <label>Location</label>
-
-                <input
-                  type="text"
-                  placeholder="e.g. Jaipur, India"
-                  value={experience.location}
-                  onChange={(event) =>
-                    updateExperience(
-                      experience.id,
-                      "location",
-                      event.target.value
-                    )
-                  }
-                />
-              </div>
-
-              <div className="form-field">
-                <label>Start Date</label>
-
-                <input
-                  type="month"
-                  value={experience.startDate}
-                  onChange={(event) =>
-                    updateExperience(
-                      experience.id,
-                      "startDate",
-                      event.target.value
-                    )
-                  }
-                />
-              </div>
-
-              <div className="form-field">
-                <label>End Date</label>
-
-                <input
-                  type="month"
-                  disabled={experience.currentlyWorking}
-                  value={experience.endDate}
-                  onChange={(event) =>
-                    updateExperience(
-                      experience.id,
-                      "endDate",
-                      event.target.value
-                    )
-                  }
-                />
-              </div>
-
-              <div className="form-field form-field--full">
-                <label className="checkbox-field">
-                  <input
-                    type="checkbox"
-                    checked={experience.currentlyWorking}
-                    onChange={(event) =>
-                      updateExperience(
-                        experience.id,
-                        "currentlyWorking",
-                        event.target.checked
+                  <button
+                    type="button"
+                    className="delete-button"
+                    onClick={() =>
+                      removeExperience(
+                        experience.id
                       )
                     }
-                  />
+                    aria-label="Delete experience"
+                  >
+                    <Trash2 size={17} />
+                  </button>
+                </div>
 
-                  <span>I currently work here</span>
-                </label>
-              </div>
+                <div className="form-grid">
+                  <div className="form-field form-field--full">
+                    <label>
+                      Job Title
+                    </label>
 
-              <div className="form-field form-field--full">
-                <label>Description</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Frontend Developer"
+                      value={
+                        experience.jobTitle
+                      }
+                      onChange={(event) =>
+                        updateExperience(
+                          experience.id,
+                          "jobTitle",
+                          event.target.value
+                        )
+                      }
+                    />
+                  </div>
 
-                <textarea
-                  rows="6"
-                  placeholder="Describe your responsibilities, achievements, and impact..."
-                  value={experience.description}
-                  onChange={(event) =>
-                    updateExperience(
-                      experience.id,
-                      "description",
-                      event.target.value
-                    )
-                  }
-                />
+                  <div className="form-field">
+                    <label>
+                      Company
+                    </label>
 
-                <div className="ai-placeholder">
-                  ✨ AI assistance will be available here
+                    <input
+                      type="text"
+                      placeholder="e.g. ABC Technologies"
+                      value={
+                        experience.company
+                      }
+                      onChange={(event) =>
+                        updateExperience(
+                          experience.id,
+                          "company",
+                          event.target.value
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label>
+                      Location
+                    </label>
+
+                    <input
+                      type="text"
+                      placeholder="e.g. Jaipur, India"
+                      value={
+                        experience.location
+                      }
+                      onChange={(event) =>
+                        updateExperience(
+                          experience.id,
+                          "location",
+                          event.target.value
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label>
+                      Start Date
+                    </label>
+
+                    <input
+                      type="month"
+                      value={
+                        experience.startDate
+                      }
+                      onChange={(event) =>
+                        updateExperience(
+                          experience.id,
+                          "startDate",
+                          event.target.value
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label>
+                      End Date
+                    </label>
+
+                    <input
+                      type="month"
+                      disabled={
+                        experience.currentlyWorking
+                      }
+                      value={
+                        experience.endDate
+                      }
+                      onChange={(event) =>
+                        updateExperience(
+                          experience.id,
+                          "endDate",
+                          event.target.value
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field form-field--full">
+                    <label className="checkbox-field">
+                      <input
+                        type="checkbox"
+                        checked={
+                          experience.currentlyWorking
+                        }
+                        onChange={(event) =>
+                          updateExperience(
+                            experience.id,
+                            "currentlyWorking",
+                            event.target.checked
+                          )
+                        }
+                      />
+
+                      <span>
+                        I currently work here
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className="form-field form-field--full">
+                    <div className="description-header">
+                      <label>
+                        Description
+                      </label>
+
+                      <button
+                        type="button"
+                        className="ai-button"
+                        onClick={() =>
+                          handleGenerateAI(
+                            experience
+                          )
+                        }
+                        disabled={
+                          isGenerating
+                        }
+                      >
+                        {isGenerating ? (
+                          <>
+                            <LoaderCircle
+                              size={15}
+                              className="ai-spinner"
+                            />
+
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles
+                              size={15}
+                            />
+
+                            Generate with AI
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <textarea
+                      rows="6"
+                      placeholder="Describe your responsibilities, achievements, and impact..."
+                      value={
+                        experience.description
+                      }
+                      onChange={(event) =>
+                        updateExperience(
+                          experience.id,
+                          "description",
+                          event.target.value
+                        )
+                      }
+                    />
+
+                    {error && (
+                      <div className="ai-error">
+                        {error}
+                      </div>
+                    )}
+
+                    {generated && (
+                      <div className="ai-result">
+                        <div className="ai-result__header">
+                          <div>
+                            <span className="ai-result__label">
+                              AI Generated
+                            </span>
+
+                            <h3>
+                              Suggested Experience
+                            </h3>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="ai-result__close"
+                            onClick={() =>
+                              handleCancelGenerated(
+                                experience.id
+                              )
+                            }
+                            aria-label="Close AI suggestion"
+                          >
+                            <X size={17} />
+                          </button>
+                        </div>
+
+                        <div className="ai-result__content">
+                          {generated}
+                        </div>
+
+                        <div className="ai-result__actions">
+                          <button
+                            type="button"
+                            className="ai-result__cancel"
+                            onClick={() =>
+                              handleCancelGenerated(
+                                experience.id
+                              )
+                            }
+                          >
+                            Cancel
+                          </button>
+
+                          <button
+                            type="button"
+                            className="ai-result__use"
+                            onClick={() =>
+                              handleUseGenerated(
+                                experience.id
+                              )
+                            }
+                          >
+                            <Check size={16} />
+
+                            Use this
+                            description
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
+            );
+          }
+        )}
       </div>
     </section>
   );
