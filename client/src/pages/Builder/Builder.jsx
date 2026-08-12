@@ -11,10 +11,14 @@ import "./Builder.css";
 export default function Builder() {
     const previewRef = useRef(null);
 
-    const [isDownloading, setIsDownloading] = useState(false);
+    const [isDownloading, setIsDownloading] =
+        useState(false);
 
     const handleDownload = async () => {
-        if (isDownloading) {
+        if (
+            isDownloading ||
+            !previewRef.current
+        ) {
             return;
         }
 
@@ -51,18 +55,22 @@ export default function Builder() {
                         Live Preview
                     </div>
 
-                    <ResumePreview ref={previewRef} />
+                    <ResumePreview
+                        ref={previewRef}
+                    />
                 </div>
             </div>
 
             <div className="builder-download">
                 <div className="builder-download__content">
                     <div>
-                        <h2>Your resume is ready</h2>
+                        <h2>
+                            Your resume is ready
+                        </h2>
 
                         <p>
-                            Download your completed resume as a
-                            professional PDF.
+                            Download your completed
+                            resume as a professional PDF.
                         </p>
                     </div>
 

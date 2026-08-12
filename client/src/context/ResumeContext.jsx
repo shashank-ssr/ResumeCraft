@@ -17,6 +17,7 @@ const initialResume = {
         linkedin: "",
         github: "",
         portfolio: "",
+        photo: "",
     },
 
     summary: "",
@@ -35,6 +36,13 @@ const initialResume = {
 
     languages: [],
 
+    // Available:
+    // modern
+    // classic
+    // minimal
+    // professional
+    // creative
+    // executive
     template: "modern",
 
     enabledSections: [
@@ -47,10 +55,62 @@ const initialResume = {
 
 const STORAGE_KEY = "resumecraft_resume";
 
+const normalizeResume = (parsedResume) => {
+    return {
+        ...initialResume,
+        ...parsedResume,
+
+        personalInfo: {
+            ...initialResume.personalInfo,
+            ...(parsedResume?.personalInfo || {}),
+        },
+
+        experience: Array.isArray(parsedResume?.experience)
+            ? parsedResume.experience
+            : [],
+
+        education: Array.isArray(parsedResume?.education)
+            ? parsedResume.education
+            : [],
+
+        projects: Array.isArray(parsedResume?.projects)
+            ? parsedResume.projects
+            : [],
+
+        skills: Array.isArray(parsedResume?.skills)
+            ? parsedResume.skills
+            : [],
+
+        certifications: Array.isArray(parsedResume?.certifications)
+            ? parsedResume.certifications
+            : [],
+
+        achievements: Array.isArray(parsedResume?.achievements)
+            ? parsedResume.achievements
+            : [],
+
+        languages: Array.isArray(parsedResume?.languages)
+            ? parsedResume.languages
+            : [],
+
+        enabledSections: Array.isArray(
+            parsedResume?.enabledSections
+        )
+            ? parsedResume.enabledSections
+            : initialResume.enabledSections,
+
+        template:
+            typeof parsedResume?.template === "string"
+                ? parsedResume.template
+                : initialResume.template,
+    };
+};
+
 export function ResumeProvider({ children }) {
     const [resume, setResume] = useState(() => {
         try {
-            const savedResume = localStorage.getItem(STORAGE_KEY);
+            const savedResume =
+                localStorage.getItem(STORAGE_KEY);
 
             if (!savedResume) {
                 return initialResume;
@@ -58,21 +118,7 @@ export function ResumeProvider({ children }) {
 
             const parsedResume = JSON.parse(savedResume);
 
-            return {
-                ...initialResume,
-                ...parsedResume,
-
-                personalInfo: {
-                    ...initialResume.personalInfo,
-                    ...(parsedResume.personalInfo || {}),
-                },
-
-                // Support older saved resumes
-                enabledSections:
-                    Array.isArray(parsedResume.enabledSections)
-                        ? parsedResume.enabledSections
-                        : initialResume.enabledSections,
-            };
+            return normalizeResume(parsedResume);
         } catch (error) {
             console.error(
                 "Failed to load saved resume:",
@@ -97,6 +143,12 @@ export function ResumeProvider({ children }) {
         }
     }, [resume]);
 
+    /*
+    =========================================================
+    PERSONAL INFORMATION
+    =========================================================
+    */
+
     const updatePersonalInfo = (field, value) => {
         setResume((previous) => ({
             ...previous,
@@ -108,6 +160,12 @@ export function ResumeProvider({ children }) {
         }));
     };
 
+    /*
+    =========================================================
+    GENERAL RESUME UPDATE
+    =========================================================
+    */
+
     const updateResume = (field, value) => {
         setResume((previous) => ({
             ...previous,
@@ -115,16 +173,84 @@ export function ResumeProvider({ children }) {
         }));
     };
 
+    /*
+    =========================================================
+    TEMPLATE
+    =========================================================
+    */
+
+    const setTemplate = (templateId) => {
+        const validTemplates = [
+            "modern",
+            "classic",
+            "minimal",
+            "professional",
+            "creative",
+            "executive",
+        ];
+
+        if (!validTemplates.includes(templateId)) {
+            console.warn(
+                `Invalid resume template: ${templateId}`
+            );
+
+            return;
+        }
+
+        setResume((previous) => ({
+            ...previous,
+            template: templateId,
+        }));
+    };
+
+    /*
+    =========================================================
+    PHOTO
+    =========================================================
+    */
+
+    const setPhoto = (photo) => {
+        setResume((previous) => ({
+            ...previous,
+
+            personalInfo: {
+                ...previous.personalInfo,
+                photo,
+            },
+        }));
+    };
+
+    const removePhoto = () => {
+        setResume((previous) => ({
+            ...previous,
+
+            personalInfo: {
+                ...previous.personalInfo,
+                photo: "",
+            },
+        }));
+    };
+
+    /*
+    =========================================================
+    SECTIONS
+    =========================================================
+    */
+
     const addSection = (section) => {
         setResume((previous) => {
-            if (previous.enabledSections.includes(section)) {
+            const currentSections =
+                previous.enabledSections || [];
+
+            if (currentSections.includes(section)) {
                 return previous;
             }
 
             return {
                 ...previous,
+
                 enabledSections: [
-                    ...previous.enabledSections,
+                    ...currentSections,
                     section,
                 ],
             };
@@ -132,26 +258,38 @@ export function ResumeProvider({ children }) {
     };
 
     const removeSection = (section) => {
-        // Personal information should always remain
+        // Personal information cannot be removed.
         if (section === "personalInfo") {
             return;
         }
 
         setResume((previous) => ({
             ...previous,
-            enabledSections:
-                previous.enabledSections.filter(
-                    (item) => item !== section
-                ),
+
+            enabledSections: (
+                previous.enabledSections || []
+            ).filter(
+                (item) => item !== section
+            ),
         }));
     };
 
     const isSectionEnabled = (section) => {
-        return resume.enabledSections.includes(section);
+        return (
+            resume.enabledSections?.includes(section) ||
+            false
+        );
     };
+
+    /*
+    =========================================================
+    RESET
+    =========================================================
+    */
 
     const resetResume = () => {
         setResume(initialResume);
+
         localStorage.removeItem(STORAGE_KEY);
     };
 
@@ -160,11 +298,19 @@ export function ResumeProvider({ children }) {
             value={{
                 resume,
                 setResume,
+
                 updatePersonalInfo,
                 updateResume,
+
+                setTemplate,
+
+                setPhoto,
+                removePhoto,
+
                 addSection,
                 removeSection,
                 isSectionEnabled,
+
                 resetResume,
             }}
         >

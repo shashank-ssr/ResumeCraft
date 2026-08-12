@@ -9,20 +9,7 @@ import Footer from "./components/Footer/Footer";
 
 import Home from "./pages/Home/Home";
 import Builder from "./pages/Builder/Builder";
-
-function Templates() {
-    return (
-        <main
-            style={{
-                minHeight: "calc(100vh - 72px)",
-                display: "grid",
-                placeItems: "center",
-            }}
-        >
-            <h1>Templates</h1>
-        </main>
-    );
-}
+import Templates from "./pages/Templates/Templates";
 
 export default function App() {
     return (

@@ -7,6 +7,7 @@ import Summary from "./Summary";
 import Certifications from "./Certifications";
 import Achievements from "./Achievements";
 import Languages from "./Languages";
+
 import SectionManager from "../SectionManager/SectionManager";
 
 import { useResume } from "../../context/ResumeContext";
@@ -16,7 +17,8 @@ import "./ResumeEditor.css";
 export default function ResumeEditor() {
     const { resume } = useResume();
 
-    const enabledSections = resume.enabledSections || [];
+    const enabledSections =
+        resume.enabledSections || [];
 
     return (
         <div className="resume-editor">
@@ -29,9 +31,10 @@ export default function ResumeEditor() {
                     <h1>Build your resume</h1>
 
                     <p>
-                        Start with your personal information.
-                        Add or remove sections to create a
-                        resume that fits your experience.
+                        Start with your personal
+                        information. Add or remove sections
+                        to create a resume that fits your
+                        experience.
                     </p>
                 </div>
             </div>
