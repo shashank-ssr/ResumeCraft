@@ -1,14 +1,37 @@
 import TemplateContent from "./TemplateContent";
 
-export default function ModernPhotoTemplate({
-    resume,
-}) {
-    const { personalInfo } = resume;
+export default function ModernPhotoTemplate({ resume }) {
+    const personalInfo = resume?.personalInfo || {};
+
+    const photo = personalInfo.photo || "";
+
+    const contactItems = [
+        personalInfo.email,
+        personalInfo.phone,
+        personalInfo.location,
+        personalInfo.linkedin,
+        personalInfo.github,
+        personalInfo.portfolio,
+    ].filter(Boolean);
 
     return (
-        <div className="resume-template template-modern-photo">
-            <header className="modern-photo-header">
-                <div>
+        <div
+            className={`resume-template modern-photo-template ${
+                photo
+                    ? "modern-photo-template--has-photo"
+                    : "modern-photo-template--no-photo"
+            }`}
+        >
+            {/* =====================================================
+                HEADER
+            ===================================================== */}
+
+            <header className="modern-photo-template__header">
+                <div className="modern-photo-template__identity">
+                    <span className="modern-photo-template__eyebrow">
+                        PROFESSIONAL RESUME
+                    </span>
+
                     <h1>
                         {personalInfo.fullName ||
                             "Your Name"}
@@ -19,31 +42,50 @@ export default function ModernPhotoTemplate({
                             "Professional Title"}
                     </h2>
 
-                    <p>
-                        {[
-                            personalInfo.email,
-                            personalInfo.phone,
-                            personalInfo.location,
-                        ]
-                            .filter(Boolean)
-                            .join(" • ")}
-                    </p>
+                    <div className="modern-photo-template__accent" />
                 </div>
 
-                {personalInfo.photo ? (
-                    <img
-                        src={personalInfo.photo}
-                        alt="Profile"
-                        className="template-photo template-photo--round"
-                    />
-                ) : (
-                    <div className="template-photo-placeholder template-photo--round">
-                        Photo
+                {/* =================================================
+                    PHOTO
+                ================================================= */}
+
+                {photo && (
+                    <div className="modern-photo-template__photo">
+                        <img
+                            src={photo}
+                            alt={
+                                personalInfo.fullName ||
+                                "Profile"
+                            }
+                        />
                     </div>
                 )}
             </header>
 
-            <TemplateContent resume={resume} />
+            {/* =====================================================
+                CONTACT INFORMATION
+            ===================================================== */}
+
+            {contactItems.length > 0 && (
+                <div className="modern-photo-template__contact">
+                    {contactItems.map((item, index) => (
+                        <span key={`${item}-${index}`}>
+                            {item}
+                        </span>
+                    ))}
+                </div>
+            )}
+
+            {/* =====================================================
+                RESUME CONTENT
+            ===================================================== */}
+
+            <main className="modern-photo-template__content">
+                <TemplateContent
+                    resume={resume}
+                    variant="modern-photo"
+                />
+            </main>
         </div>
     );
 }

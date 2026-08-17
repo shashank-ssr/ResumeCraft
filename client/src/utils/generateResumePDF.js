@@ -11,12 +11,61 @@ export async function generateResumePDF(
     );
   }
 
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    logging: false,
-  });
+  const exportId =
+    `resume-export-${Date.now()}`;
+
+  const exportHeight = Math.max(
+    1123,
+    element.scrollHeight || 1123
+  );
+
+  element.setAttribute(
+    "data-pdf-export-id",
+    exportId
+  );
+
+  let canvas;
+
+  try {
+    canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      width: 794,
+      height: exportHeight,
+      windowWidth: 794,
+      windowHeight: exportHeight,
+      onclone: (documentClone) => {
+        const clonedElement =
+          documentClone.querySelector(
+            `[data-pdf-export-id="${exportId}"]`
+          );
+
+        if (!clonedElement) {
+          return;
+        }
+
+        clonedElement.classList.add(
+          "resume-preview--exporting"
+        );
+
+        const wrapper =
+          clonedElement.parentElement;
+
+        if (wrapper) {
+          wrapper.style.width = "794px";
+          wrapper.style.height =
+            `${exportHeight}px`;
+          wrapper.style.overflow = "visible";
+        }
+      },
+    });
+  } finally {
+    element.removeAttribute(
+      "data-pdf-export-id"
+    );
+  }
 
   const imageData =
     canvas.toDataURL("image/png");

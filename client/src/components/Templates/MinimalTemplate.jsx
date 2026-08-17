@@ -1,29 +1,115 @@
+const hasText = (value) =>
+    String(value || "").trim().length > 0;
+
+const hasAnyText = (item, fields) =>
+    fields.some((field) => hasText(item?.[field]));
+
+const filterItems = (items, fields) =>
+    Array.isArray(items)
+        ? items.filter((item) =>
+              hasAnyText(item, fields)
+          )
+        : [];
+
+const formatDateRange = (item) => {
+    const start = item.startDate || "";
+    const end = item.currentlyWorking
+        ? "Present"
+        : item.endDate || "";
+
+    if (start && end) {
+        return `${start} - ${end}`;
+    }
+
+    return start || end;
+};
+
+const normalizeSkills = (items) => {
+    if (Array.isArray(items)) {
+        return items.filter(hasText);
+    }
+
+    return String(items || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+};
+
 export default function MinimalTemplate({ resume }) {
     const {
-        personalInfo,
-        summary,
-        experience = [],
-        education = [],
-        projects = [],
-        skills = [],
-        certifications = [],
-        achievements = [],
-        languages = [],
+        personalInfo = {},
+        summary = "",
         enabledSections = [],
     } = resume;
 
-    const hasContactInfo =
-        personalInfo.email ||
-        personalInfo.phone ||
-        personalInfo.location ||
-        personalInfo.linkedin ||
-        personalInfo.github ||
-        personalInfo.portfolio;
+    const contactItems = [
+        personalInfo.email,
+        personalInfo.phone,
+        personalInfo.location,
+        personalInfo.linkedin,
+        personalInfo.github,
+        personalInfo.portfolio,
+    ].filter(hasText);
+
+    const experience = filterItems(
+        resume.experience,
+        [
+            "jobTitle",
+            "company",
+            "location",
+            "startDate",
+            "endDate",
+            "description",
+        ]
+    );
+
+    const education = filterItems(
+        resume.education,
+        [
+            "degree",
+            "institution",
+            "location",
+            "startDate",
+            "endDate",
+            "grade",
+            "description",
+        ]
+    );
+
+    const projects = filterItems(
+        resume.projects,
+        [
+            "name",
+            "technologies",
+            "link",
+            "description",
+        ]
+    );
+
+    const skills = filterItems(
+        resume.skills,
+        ["category", "items"]
+    );
+
+    const certifications = filterItems(
+        resume.certifications,
+        ["name", "issuer", "date"]
+    );
+
+    const achievements = filterItems(
+        resume.achievements,
+        ["title", "description"]
+    );
+
+    const languages = filterItems(
+        resume.languages,
+        ["name", "level", "proficiency"]
+    );
 
     return (
-        <div className="template template--minimal">
+        <div className="template template--minimal template--minimal-no-photo">
             <header className="minimal-header">
-                <div>
+                <div className="minimal-header__content">
                     <h1>
                         {personalInfo.fullName || "Your Name"}
                     </h1>
@@ -32,321 +118,424 @@ export default function MinimalTemplate({ resume }) {
                         {personalInfo.jobTitle ||
                             "Professional Title"}
                     </h2>
-                </div>
 
-                {personalInfo.photo && (
-                    <img
-                        src={personalInfo.photo}
-                        alt="Profile"
-                        className="template-photo template-photo--minimal"
-                    />
-                )}
+                    {contactItems.length > 0 && (
+                        <div className="minimal-header__contact">
+                            {contactItems.map(
+                                (item, index) => (
+                                    <span
+                                        key={`${item}-${index}`}
+                                    >
+                                        {item}
+                                    </span>
+                                )
+                            )}
+                        </div>
+                    )}
+                </div>
             </header>
 
-            {hasContactInfo && (
-                <div className="minimal-contact">
-                    {personalInfo.email && (
-                        <span>{personalInfo.email}</span>
-                    )}
+            {enabledSections.includes("summary") &&
+                hasText(summary) && (
+                    <section className="minimal-section">
+                        <div className="minimal-section__heading">
+                            <h3>Profile</h3>
+                            <span />
+                        </div>
 
-                    {personalInfo.phone && (
-                        <span>{personalInfo.phone}</span>
-                    )}
-
-                    {personalInfo.location && (
-                        <span>{personalInfo.location}</span>
-                    )}
-
-                    {personalInfo.linkedin && (
-                        <span>{personalInfo.linkedin}</span>
-                    )}
-
-                    {personalInfo.github && (
-                        <span>{personalInfo.github}</span>
-                    )}
-
-                    {personalInfo.portfolio && (
-                        <span>{personalInfo.portfolio}</span>
-                    )}
-                </div>
-            )}
-
-            {enabledSections.includes("summary") && (
-                <section className="minimal-section">
-                    <h3>Summary</h3>
-
-                    {summary ? (
-                        <p>{summary}</p>
-                    ) : (
-                        <p className="template-placeholder">
-                            Your professional summary will appear
-                            here.
+                        <p className="minimal-profile-text">
+                            {summary}
                         </p>
-                    )}
-                </section>
-            )}
+                    </section>
+                )}
 
-            {enabledSections.includes("experience") && (
-                <section className="minimal-section">
-                    <h3>Experience</h3>
+            {enabledSections.includes("experience") &&
+                experience.length > 0 && (
+                    <section className="minimal-section">
+                        <div className="minimal-section__heading">
+                            <h3>Work Experience</h3>
+                            <span />
+                        </div>
 
-                    {experience.length === 0 ? (
-                        <p className="template-placeholder">
-                            Your work experience will appear here.
-                        </p>
-                    ) : (
-                        experience.map((item) => (
-                            <article
-                                className="minimal-item"
-                                key={item.id}
-                            >
-                                <div className="minimal-item__top">
-                                    <div>
+                        <div className="minimal-entry-list">
+                            {experience.map((item) => (
+                                <article
+                                    className="minimal-entry"
+                                    key={item.id}
+                                >
+                                    <div className="minimal-entry__side">
+                                        {hasText(
+                                            item.company
+                                        ) && (
+                                            <strong>
+                                                {
+                                                    item.company
+                                                }
+                                            </strong>
+                                        )}
+
+                                        {hasText(
+                                            item.location
+                                        ) && (
+                                            <span>
+                                                {
+                                                    item.location
+                                                }
+                                            </span>
+                                        )}
+
+                                        {formatDateRange(
+                                            item
+                                        ) && (
+                                            <span>
+                                                {formatDateRange(
+                                                    item
+                                                )}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="minimal-entry__main">
                                         <h4>
                                             {item.jobTitle ||
-                                                "Job Title"}
+                                                "Experience"}
                                         </h4>
 
-                                        <p>
-                                            {item.company ||
-                                                "Company"}
+                                        {hasText(
+                                            item.description
+                                        ) && (
+                                            <div className="minimal-description">
+                                                {item.description
+                                                    .split("\n")
+                                                    .filter(
+                                                        hasText
+                                                    )
+                                                    .map(
+                                                        (
+                                                            line,
+                                                            index
+                                                        ) => (
+                                                            <p
+                                                                key={
+                                                                    index
+                                                                }
+                                                            >
+                                                                {
+                                                                    line
+                                                                }
+                                                            </p>
+                                                        )
+                                                    )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
-                                            {item.location
-                                                ? ` · ${item.location}`
-                                                : ""}
-                                        </p>
+            {enabledSections.includes("education") &&
+                education.length > 0 && (
+                    <section className="minimal-section">
+                        <div className="minimal-section__heading">
+                            <h3>Education</h3>
+                            <span />
+                        </div>
+
+                        <div className="minimal-entry-list">
+                            {education.map((item) => (
+                                <article
+                                    className="minimal-entry"
+                                    key={item.id}
+                                >
+                                    <div className="minimal-entry__side">
+                                        {hasText(
+                                            item.institution
+                                        ) && (
+                                            <strong>
+                                                {
+                                                    item.institution
+                                                }
+                                            </strong>
+                                        )}
+
+                                        {hasText(
+                                            item.location
+                                        ) && (
+                                            <span>
+                                                {
+                                                    item.location
+                                                }
+                                            </span>
+                                        )}
+
+                                        {formatDateRange(
+                                            item
+                                        ) && (
+                                            <span>
+                                                {formatDateRange(
+                                                    item
+                                                )}
+                                            </span>
+                                        )}
                                     </div>
 
-                                    <span>
-                                        {item.startDate ||
-                                            "Start"}
-
-                                        {" — "}
-
-                                        {item.currentlyWorking
-                                            ? "Present"
-                                            : item.endDate ||
-                                              "End"}
-                                    </span>
-                                </div>
-
-                                {item.description && (
-                                    <p className="minimal-description">
-                                        {item.description}
-                                    </p>
-                                )}
-                            </article>
-                        ))
-                    )}
-                </section>
-            )}
-
-            {enabledSections.includes("education") && (
-                <section className="minimal-section">
-                    <h3>Education</h3>
-
-                    {education.length === 0 ? (
-                        <p className="template-placeholder">
-                            Your education will appear here.
-                        </p>
-                    ) : (
-                        education.map((item) => (
-                            <article
-                                className="minimal-item"
-                                key={item.id}
-                            >
-                                <div className="minimal-item__top">
-                                    <div>
+                                    <div className="minimal-entry__main">
                                         <h4>
                                             {item.degree ||
-                                                "Degree / Qualification"}
+                                                "Education"}
                                         </h4>
 
-                                        <p>
-                                            {item.institution ||
-                                                "Institution"}
+                                        {hasText(
+                                            item.grade
+                                        ) && (
+                                            <p className="minimal-entry__meta">
+                                                {
+                                                    item.grade
+                                                }
+                                            </p>
+                                        )}
 
-                                            {item.location
-                                                ? ` · ${item.location}`
-                                                : ""}
-                                        </p>
+                                        {hasText(
+                                            item.description
+                                        ) && (
+                                            <p className="minimal-entry__description">
+                                                {
+                                                    item.description
+                                                }
+                                            </p>
+                                        )}
                                     </div>
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
-                                    <span>
-                                        {item.startDate ||
-                                            "Start"}
+            {enabledSections.includes("projects") &&
+                projects.length > 0 && (
+                    <section className="minimal-section">
+                        <div className="minimal-section__heading">
+                            <h3>Projects</h3>
+                            <span />
+                        </div>
 
-                                        {" — "}
-
-                                        {item.endDate || "End"}
-                                    </span>
-                                </div>
-
-                                {item.grade && (
-                                    <p className="minimal-meta">
-                                        {item.grade}
-                                    </p>
-                                )}
-
-                                {item.description && (
-                                    <p className="minimal-description">
-                                        {item.description}
-                                    </p>
-                                )}
-                            </article>
-                        ))
-                    )}
-                </section>
-            )}
-
-            {enabledSections.includes("projects") && (
-                <section className="minimal-section">
-                    <h3>Projects</h3>
-
-                    {projects.length === 0 ? (
-                        <p className="template-placeholder">
-                            Your projects will appear here.
-                        </p>
-                    ) : (
-                        projects.map((project) => (
-                            <article
-                                className="minimal-item"
-                                key={project.id}
-                            >
-                                <div className="minimal-item__top">
-                                    <div>
+                        <div className="minimal-project-list">
+                            {projects.map((project) => (
+                                <article
+                                    className="minimal-project"
+                                    key={project.id}
+                                >
+                                    <div className="minimal-project__header">
                                         <h4>
                                             {project.name ||
-                                                "Project Name"}
+                                                "Project"}
                                         </h4>
 
-                                        {project.technologies && (
+                                        {hasText(
+                                            project.link
+                                        ) && (
+                                            <span>
+                                                {project.link}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {hasText(
+                                        project.technologies
+                                    ) && (
+                                        <p className="minimal-project__technology">
+                                            {
+                                                project.technologies
+                                            }
+                                        </p>
+                                    )}
+
+                                    {hasText(
+                                        project.description
+                                    ) && (
+                                        <p className="minimal-entry__description">
+                                            {
+                                                project.description
+                                            }
+                                        </p>
+                                    )}
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+            {enabledSections.includes("skills") &&
+                skills.length > 0 && (
+                    <section className="minimal-section">
+                        <div className="minimal-section__heading">
+                            <h3>Skills</h3>
+                            <span />
+                        </div>
+
+                        <div className="minimal-skills-grid">
+                            {skills.map((skill) => {
+                                const skillItems =
+                                    normalizeSkills(
+                                        skill.items
+                                    );
+
+                                return (
+                                    <div
+                                        className="minimal-skill-group"
+                                        key={skill.id}
+                                    >
+                                        {hasText(
+                                            skill.category
+                                        ) && (
+                                            <h4>
+                                                {
+                                                    skill.category
+                                                }
+                                            </h4>
+                                        )}
+
+                                        {skillItems.length >
+                                            0 && (
+                                            <div className="minimal-skill-items">
+                                                {skillItems.map(
+                                                    (
+                                                        item,
+                                                        index
+                                                    ) => (
+                                                        <span
+                                                            key={
+                                                                index
+                                                            }
+                                                        >
+                                                            {
+                                                                item
+                                                            }
+                                                        </span>
+                                                    )
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
+
+            {enabledSections.includes("certifications") &&
+                certifications.length > 0 && (
+                    <section className="minimal-section">
+                        <div className="minimal-section__heading">
+                            <h3>Certifications</h3>
+                            <span />
+                        </div>
+
+                        <div className="minimal-certificate-list">
+                            {certifications.map((item) => (
+                                <article
+                                    className="minimal-certificate"
+                                    key={item.id}
+                                >
+                                    <div>
+                                        <h4>
+                                            {item.name ||
+                                                "Certification"}
+                                        </h4>
+
+                                        {hasText(
+                                            item.issuer
+                                        ) && (
                                             <p>
                                                 {
-                                                    project.technologies
+                                                    item.issuer
                                                 }
                                             </p>
                                         )}
                                     </div>
 
-                                    {project.link && (
+                                    {hasText(
+                                        item.date
+                                    ) && (
                                         <span>
-                                            {project.link}
+                                            {item.date}
                                         </span>
                                     )}
-                                </div>
-
-                                {project.description && (
-                                    <p className="minimal-description">
-                                        {project.description}
-                                    </p>
-                                )}
-                            </article>
-                        ))
-                    )}
-                </section>
-            )}
-
-            {enabledSections.includes("skills") && (
-                <section className="minimal-section">
-                    <h3>Skills</h3>
-
-                    {skills.length === 0 ? (
-                        <p className="template-placeholder">
-                            Your skills will appear here.
-                        </p>
-                    ) : (
-                        <div className="minimal-skills">
-                            {skills.map((skill) => (
-                                <div
-                                    className="minimal-skill"
-                                    key={skill.id}
-                                >
-                                    <strong>
-                                        {skill.category ||
-                                            "Skills"}
-                                    </strong>
-
-                                    <span>
-                                        {skill.items ||
-                                            "Add your skills"}
-                                    </span>
-                                </div>
+                                </article>
                             ))}
                         </div>
-                    )}
-                </section>
-            )}
+                    </section>
+                )}
 
-            {enabledSections.includes("certifications") && (
-                <section className="minimal-section">
-                    <h3>Certifications</h3>
+            {enabledSections.includes("achievements") &&
+                achievements.length > 0 && (
+                    <section className="minimal-section">
+                        <div className="minimal-section__heading">
+                            <h3>Achievements</h3>
+                            <span />
+                        </div>
 
-                    {certifications.map((item) => (
-                        <article
-                            className="minimal-item"
-                            key={item.id}
-                        >
-                            <h4>
-                                {item.name ||
-                                    "Certification"}
-                            </h4>
+                        <div className="minimal-achievement-list">
+                            {achievements.map((item) => (
+                                <article
+                                    className="minimal-achievement"
+                                    key={item.id}
+                                >
+                                    <h4>
+                                        {item.title ||
+                                            "Achievement"}
+                                    </h4>
 
-                            {item.issuer && (
-                                <p>{item.issuer}</p>
-                            )}
+                                    {hasText(
+                                        item.description
+                                    ) && (
+                                        <p>
+                                            {
+                                                item.description
+                                            }
+                                        </p>
+                                    )}
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
-                            {item.date && (
-                                <span>{item.date}</span>
-                            )}
-                        </article>
-                    ))}
-                </section>
-            )}
+            {enabledSections.includes("languages") &&
+                languages.length > 0 && (
+                    <section className="minimal-section">
+                        <div className="minimal-section__heading">
+                            <h3>Languages</h3>
+                            <span />
+                        </div>
 
-            {enabledSections.includes("achievements") && (
-                <section className="minimal-section">
-                    <h3>Achievements</h3>
+                        <div className="minimal-language-list">
+                            {languages.map((language) => {
+                                const level =
+                                    language.level ||
+                                    language.proficiency ||
+                                    "";
 
-                    {achievements.map((item) => (
-                        <article
-                            className="minimal-item"
-                            key={item.id}
-                        >
-                            <h4>
-                                {item.title ||
-                                    "Achievement"}
-                            </h4>
+                                return (
+                                    <span
+                                        className="minimal-language"
+                                        key={language.id}
+                                    >
+                                        <strong>
+                                            {language.name ||
+                                                "Language"}
+                                        </strong>
 
-                            {item.description && (
-                                <p className="minimal-description">
-                                    {item.description}
-                                </p>
-                            )}
-                        </article>
-                    ))}
-                </section>
-            )}
-
-            {enabledSections.includes("languages") && (
-                <section className="minimal-section">
-                    <h3>Languages</h3>
-
-                    <div className="minimal-languages">
-                        {languages.map((language) => (
-                            <span key={language.id}>
-                                <strong>
-                                    {language.name ||
-                                        "Language"}
-                                </strong>
-
-                                {language.level &&
-                                    ` — ${language.level}`}
-                            </span>
-                        ))}
-                    </div>
-                </section>
-            )}
+                                        {hasText(level) &&
+                                            ` - ${level}`}
+                                    </span>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
         </div>
     );
 }

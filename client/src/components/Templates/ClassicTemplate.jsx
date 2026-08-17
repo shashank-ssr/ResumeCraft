@@ -1,35 +1,51 @@
 import TemplateContent from "./TemplateContent";
 
-export default function ClassicTemplate({
-    resume,
-}) {
-    const { personalInfo } = resume;
+export default function ClassicTemplate({ resume }) {
+    const { personalInfo = {} } = resume;
+
+    const contactDetails = [
+        personalInfo.email,
+        personalInfo.phone,
+        personalInfo.location,
+        personalInfo.linkedin,
+        personalInfo.github,
+        personalInfo.portfolio,
+    ].filter(Boolean);
 
     return (
         <div className="resume-template template-classic">
+            {/* =====================================================
+                HEADER
+            ===================================================== */}
             <header className="classic-header">
                 <h1>
-                    {personalInfo.fullName ||
-                        "Your Name"}
+                    {personalInfo.fullName || "Your Name"}
                 </h1>
 
-                <h2>
-                    {personalInfo.jobTitle ||
-                        "Professional Title"}
-                </h2>
+                {personalInfo.jobTitle && (
+                    <h2>{personalInfo.jobTitle}</h2>
+                )}
 
-                <p>
-                    {[
-                        personalInfo.email,
-                        personalInfo.phone,
-                        personalInfo.location,
-                    ]
-                        .filter(Boolean)
-                        .join(" • ")}
-                </p>
+                {contactDetails.length > 0 && (
+                    <div className="classic-contact">
+                        {contactDetails.map((detail, index) => (
+                            <span key={`${detail}-${index}`}>
+                                {detail}
+                            </span>
+                        ))}
+                    </div>
+                )}
             </header>
 
-            <TemplateContent resume={resume} />
+            {/* =====================================================
+                RESUME CONTENT
+            ===================================================== */}
+            <main className="classic-content">
+                <TemplateContent
+                    resume={resume}
+                    variant="classic"
+                />
+            </main>
         </div>
     );
 }

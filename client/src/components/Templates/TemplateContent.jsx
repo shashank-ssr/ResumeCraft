@@ -1,79 +1,166 @@
+const hasText = (value) =>
+    String(value || "").trim().length > 0;
+
+const hasAnyText = (item, fields) =>
+    fields.some((field) => hasText(item?.[field]));
+
+const filterItems = (items, fields) =>
+    Array.isArray(items)
+        ? items.filter((item) =>
+              hasAnyText(item, fields)
+          )
+        : [];
+
+const getDateRange = (item) => {
+    const start = item.startDate || "";
+    const end = item.currentlyWorking
+        ? "Present"
+        : item.endDate || "";
+
+    if (start && end) {
+        return `${start} - ${end}`;
+    }
+
+    return start || end;
+};
+
+const getLocationMeta = (...parts) =>
+    parts.filter(hasText).join(" - ");
+
 export default function TemplateContent({
     resume,
-    variant = "",
 }) {
     const {
-        personalInfo,
-        summary,
-        experience = [],
-        education = [],
-        projects = [],
-        skills = [],
-        certifications = [],
-        achievements = [],
-        languages = [],
+        summary = "",
         enabledSections = [],
     } = resume;
 
     const sectionEnabled = (section) =>
         enabledSections.includes(section);
 
+    const experience = filterItems(
+        resume.experience,
+        [
+            "jobTitle",
+            "company",
+            "location",
+            "startDate",
+            "endDate",
+            "description",
+        ]
+    );
+
+    const education = filterItems(
+        resume.education,
+        [
+            "degree",
+            "institution",
+            "location",
+            "startDate",
+            "endDate",
+            "grade",
+            "description",
+        ]
+    );
+
+    const projects = filterItems(
+        resume.projects,
+        [
+            "name",
+            "technologies",
+            "link",
+            "description",
+        ]
+    );
+
+    const skills = filterItems(
+        resume.skills,
+        ["category", "items"]
+    );
+
+    const certifications = filterItems(
+        resume.certifications,
+        ["name", "issuer", "date", "link"]
+    );
+
+    const achievements = filterItems(
+        resume.achievements,
+        ["title", "description"]
+    );
+
+    const languages = filterItems(
+        resume.languages,
+        ["name", "level", "proficiency"]
+    );
+
     return (
         <>
-            {sectionEnabled("summary") && summary && (
-                <section className="template-section">
-                    <h3>Summary</h3>
+            {sectionEnabled("summary") &&
+                hasText(summary) && (
+                    <section className="template-section">
+                        <h3>Summary</h3>
 
-                    <p className="template-summary">
-                        {summary}
-                    </p>
-                </section>
-            )}
+                        <p className="template-summary">
+                            {summary}
+                        </p>
+                    </section>
+                )}
 
             {sectionEnabled("experience") &&
                 experience.length > 0 && (
                     <section className="template-section">
                         <h3>Experience</h3>
 
-                        {experience.map((item) => (
-                            <article
-                                className="template-item"
-                                key={item.id}
-                            >
-                                <div className="template-item__header">
-                                    <div>
-                                        <h4>
-                                            {item.jobTitle ||
-                                                "Job Title"}
-                                        </h4>
+                        {experience.map((item) => {
+                            const companyMeta =
+                                getLocationMeta(
+                                    item.company,
+                                    item.location
+                                );
 
-                                        <p>
-                                            {item.company ||
-                                                "Company"}
+                            const dateRange =
+                                getDateRange(item);
 
-                                            {item.location &&
-                                                ` · ${item.location}`}
-                                        </p>
+                            return (
+                                <article
+                                    className="template-item"
+                                    key={item.id}
+                                >
+                                    <div className="template-item__header">
+                                        <div>
+                                            <h4>
+                                                {item.jobTitle ||
+                                                    "Experience"}
+                                            </h4>
+
+                                            {companyMeta && (
+                                                <p>
+                                                    {
+                                                        companyMeta
+                                                    }
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        {dateRange && (
+                                            <span>
+                                                {dateRange}
+                                            </span>
+                                        )}
                                     </div>
 
-                                    <span>
-                                        {item.startDate}
-
-                                        {" — "}
-
-                                        {item.currentlyWorking
-                                            ? "Present"
-                                            : item.endDate}
-                                    </span>
-                                </div>
-
-                                {item.description && (
-                                    <p>
-                                        {item.description}
-                                    </p>
-                                )}
-                            </article>
-                        ))}
+                                    {hasText(
+                                        item.description
+                                    ) && (
+                                        <p>
+                                            {
+                                                item.description
+                                            }
+                                        </p>
+                                    )}
+                                </article>
+                            );
+                        })}
                     </section>
                 )}
 
@@ -82,49 +169,64 @@ export default function TemplateContent({
                     <section className="template-section">
                         <h3>Education</h3>
 
-                        {education.map((item) => (
-                            <article
-                                className="template-item"
-                                key={item.id}
-                            >
-                                <div className="template-item__header">
-                                    <div>
-                                        <h4>
-                                            {item.degree ||
-                                                "Degree / Qualification"}
-                                        </h4>
+                        {education.map((item) => {
+                            const schoolMeta =
+                                getLocationMeta(
+                                    item.institution,
+                                    item.location
+                                );
 
-                                        <p>
-                                            {item.institution ||
-                                                "Institution"}
+                            const dateRange =
+                                getDateRange(item);
 
-                                            {item.location &&
-                                                ` · ${item.location}`}
-                                        </p>
+                            return (
+                                <article
+                                    className="template-item"
+                                    key={item.id}
+                                >
+                                    <div className="template-item__header">
+                                        <div>
+                                            <h4>
+                                                {item.degree ||
+                                                    "Education"}
+                                            </h4>
+
+                                            {schoolMeta && (
+                                                <p>
+                                                    {
+                                                        schoolMeta
+                                                    }
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        {dateRange && (
+                                            <span>
+                                                {dateRange}
+                                            </span>
+                                        )}
                                     </div>
 
-                                    <span>
-                                        {item.startDate}
+                                    {hasText(
+                                        item.grade
+                                    ) && (
+                                        <strong>
+                                            {item.grade}
+                                        </strong>
+                                    )}
 
-                                        {" — "}
-
-                                        {item.endDate}
-                                    </span>
-                                </div>
-
-                                {item.grade && (
-                                    <strong>
-                                        {item.grade}
-                                    </strong>
-                                )}
-
-                                {item.description && (
-                                    <p>
-                                        {item.description}
-                                    </p>
-                                )}
-                            </article>
-                        ))}
+                                    {hasText(
+                                        item.description
+                                    ) && (
+                                        <p>
+                                            {
+                                                item.description
+                                            }
+                                        </p>
+                                    )}
+                                </article>
+                            );
+                        })}
                     </section>
                 )}
 
@@ -142,10 +244,12 @@ export default function TemplateContent({
                                     <div>
                                         <h4>
                                             {project.name ||
-                                                "Project Name"}
+                                                "Project"}
                                         </h4>
 
-                                        {project.technologies && (
+                                        {hasText(
+                                            project.technologies
+                                        ) && (
                                             <p>
                                                 {
                                                     project.technologies
@@ -154,16 +258,22 @@ export default function TemplateContent({
                                         )}
                                     </div>
 
-                                    {project.link && (
+                                    {hasText(
+                                        project.link
+                                    ) && (
                                         <span>
                                             {project.link}
                                         </span>
                                     )}
                                 </div>
 
-                                {project.description && (
+                                {hasText(
+                                    project.description
+                                ) && (
                                     <p>
-                                        {project.description}
+                                        {
+                                            project.description
+                                        }
                                     </p>
                                 )}
                             </article>
@@ -182,15 +292,23 @@ export default function TemplateContent({
                                     key={skill.id}
                                     className="template-skill"
                                 >
-                                    <strong>
-                                        {skill.category ||
-                                            "Skills"}
-                                        :
-                                    </strong>
+                                    {hasText(
+                                        skill.category
+                                    ) && (
+                                        <strong>
+                                            {
+                                                skill.category
+                                            }
+                                        </strong>
+                                    )}
 
-                                    <span>
-                                        {skill.items}
-                                    </span>
+                                    {hasText(
+                                        skill.items
+                                    ) && (
+                                        <span>
+                                            {skill.items}
+                                        </span>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -207,19 +325,37 @@ export default function TemplateContent({
                                 className="template-item"
                                 key={item.id}
                             >
-                                <h4>
-                                    {item.name ||
-                                        "Certification"}
-                                </h4>
+                                <div className="template-item__header">
+                                    <div>
+                                        <h4>
+                                            {item.name ||
+                                                "Certification"}
+                                        </h4>
 
-                                {item.issuer && (
-                                    <p>{item.issuer}</p>
-                                )}
+                                        {hasText(
+                                            item.issuer
+                                        ) && (
+                                            <p>
+                                                {
+                                                    item.issuer
+                                                }
+                                            </p>
+                                        )}
+                                    </div>
 
-                                {item.date && (
-                                    <span>
-                                        {item.date}
-                                    </span>
+                                    {hasText(
+                                        item.date
+                                    ) && (
+                                        <span>
+                                            {item.date}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {hasText(item.link) && (
+                                    <p>
+                                        {item.link}
+                                    </p>
                                 )}
                             </article>
                         ))}
@@ -241,9 +377,13 @@ export default function TemplateContent({
                                         "Achievement"}
                                 </h4>
 
-                                {item.description && (
+                                {hasText(
+                                    item.description
+                                ) && (
                                     <p>
-                                        {item.description}
+                                        {
+                                            item.description
+                                        }
                                     </p>
                                 )}
                             </article>
@@ -257,16 +397,24 @@ export default function TemplateContent({
                         <h3>Languages</h3>
 
                         <div className="template-languages">
-                            {languages.map((item) => (
-                                <span key={item.id}>
-                                    <strong>
-                                        {item.name}
-                                    </strong>
+                            {languages.map((item) => {
+                                const level =
+                                    item.level ||
+                                    item.proficiency ||
+                                    "";
 
-                                    {item.level &&
-                                        ` — ${item.level}`}
-                                </span>
-                            ))}
+                                return (
+                                    <span key={item.id}>
+                                        <strong>
+                                            {item.name ||
+                                                "Language"}
+                                        </strong>
+
+                                        {hasText(level) &&
+                                            ` - ${level}`}
+                                    </span>
+                                );
+                            })}
                         </div>
                     </section>
                 )}

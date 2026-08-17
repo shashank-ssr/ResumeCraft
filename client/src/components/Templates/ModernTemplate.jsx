@@ -3,60 +3,108 @@ import {
     Phone,
     MapPin,
     Globe,
+    Linkedin,
+    Github,
 } from "lucide-react";
 
 import TemplateContent from "./TemplateContent";
 
-export default function ModernTemplate({
-    resume,
-}) {
-    const { personalInfo } = resume;
+export default function ModernTemplate({ resume }) {
+    const personalInfo = resume.personalInfo || {};
+
+    const fullName =
+        personalInfo.fullName || "Your Name";
+
+    const jobTitle =
+        personalInfo.jobTitle || "Professional Title";
+
+    const contactItems = [
+        {
+            value: personalInfo.email,
+            icon: Mail,
+        },
+        {
+            value: personalInfo.phone,
+            icon: Phone,
+        },
+        {
+            value: personalInfo.location,
+            icon: MapPin,
+        },
+        {
+            value: personalInfo.portfolio,
+            icon: Globe,
+        },
+        {
+            value: personalInfo.linkedin,
+            icon: Linkedin,
+        },
+        {
+            value: personalInfo.github,
+            icon: Github,
+        },
+    ].filter((item) => item.value);
 
     return (
         <div className="resume-template template-modern">
+            {/* =====================================================
+                HEADER
+            ===================================================== */}
+
             <header className="modern-header">
-                <h1>
-                    {personalInfo.fullName ||
-                        "Your Name"}
-                </h1>
+                <div className="modern-header__accent" />
 
-                <h2>
-                    {personalInfo.jobTitle ||
-                        "Professional Title"}
-                </h2>
-
-                <div className="modern-contact">
-                    {personalInfo.email && (
-                        <span>
-                            <Mail size={10} />
-                            {personalInfo.email}
+                <div className="modern-header__content">
+                    <div className="modern-header__identity">
+                        <span className="modern-header__eyebrow">
+                            PROFESSIONAL RESUME
                         </span>
-                    )}
 
-                    {personalInfo.phone && (
-                        <span>
-                            <Phone size={10} />
-                            {personalInfo.phone}
-                        </span>
-                    )}
+                        <h1>{fullName}</h1>
 
-                    {personalInfo.location && (
-                        <span>
-                            <MapPin size={10} />
-                            {personalInfo.location}
-                        </span>
-                    )}
+                        <h2>{jobTitle}</h2>
+                    </div>
 
-                    {personalInfo.portfolio && (
-                        <span>
-                            <Globe size={10} />
-                            {personalInfo.portfolio}
-                        </span>
+                    {contactItems.length > 0 && (
+                        <div className="modern-contact">
+                            {contactItems.map(
+                                (
+                                    {
+                                        value,
+                                        icon: Icon,
+                                    },
+                                    index
+                                ) => (
+                                    <span
+                                        key={`${value}-${index}`}
+                                        className="modern-contact__item"
+                                    >
+                                        <Icon
+                                            size={11}
+                                            strokeWidth={1.8}
+                                        />
+
+                                        <span>
+                                            {value}
+                                        </span>
+                                    </span>
+                                )
+                            )}
+                        </div>
                     )}
                 </div>
             </header>
 
-            <TemplateContent resume={resume} />
+            {/* =====================================================
+                RESUME CONTENT
+            ===================================================== */}
+
+            <main className="modern-content">
+                <TemplateContent
+                    resume={resume}
+                    variant="modern"
+                />
+            </main>
         </div>
     );
 }

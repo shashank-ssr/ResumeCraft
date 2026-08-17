@@ -21,28 +21,14 @@ const initialResume = {
     },
 
     summary: "",
-
     experience: [],
-
     education: [],
-
     projects: [],
-
     skills: [],
-
     certifications: [],
-
     achievements: [],
-
     languages: [],
 
-    // Available:
-    // modern
-    // classic
-    // minimal
-    // professional
-    // creative
-    // executive
     template: "modern",
 
     enabledSections: [
@@ -55,14 +41,44 @@ const initialResume = {
 
 const STORAGE_KEY = "resumecraft_resume";
 
+const VALID_TEMPLATES = [
+    "modern",
+    "classic",
+    "minimal",
+    "professional",
+    "creative",
+    "modern-photo",
+    "executive",
+];
+
 const normalizeResume = (parsedResume) => {
+    const storedResume = {
+        ...(parsedResume || {}),
+    };
+
+    const legacyPhoto =
+        storedResume.photo ||
+        parsedResume?.personalInfo?.photo ||
+        "";
+
+    delete storedResume.photo;
+    delete storedResume.photoEnabled;
+
+    const storedTemplate =
+        parsedResume?.template === "creative-photo"
+            ? "creative"
+            : parsedResume?.template;
+
     return {
         ...initialResume,
-        ...parsedResume,
+        ...storedResume,
 
         personalInfo: {
             ...initialResume.personalInfo,
             ...(parsedResume?.personalInfo || {}),
+
+            // Always keep photo inside personalInfo
+            photo: legacyPhoto,
         },
 
         experience: Array.isArray(parsedResume?.experience)
@@ -81,11 +97,15 @@ const normalizeResume = (parsedResume) => {
             ? parsedResume.skills
             : [],
 
-        certifications: Array.isArray(parsedResume?.certifications)
+        certifications: Array.isArray(
+            parsedResume?.certifications
+        )
             ? parsedResume.certifications
             : [],
 
-        achievements: Array.isArray(parsedResume?.achievements)
+        achievements: Array.isArray(
+            parsedResume?.achievements
+        )
             ? parsedResume.achievements
             : [],
 
@@ -99,10 +119,11 @@ const normalizeResume = (parsedResume) => {
             ? parsedResume.enabledSections
             : initialResume.enabledSections,
 
-        template:
-            typeof parsedResume?.template === "string"
-                ? parsedResume.template
-                : initialResume.template,
+        template: VALID_TEMPLATES.includes(
+            storedTemplate
+        )
+            ? storedTemplate
+            : initialResume.template,
     };
 };
 
@@ -116,7 +137,8 @@ export function ResumeProvider({ children }) {
                 return initialResume;
             }
 
-            const parsedResume = JSON.parse(savedResume);
+            const parsedResume =
+                JSON.parse(savedResume);
 
             return normalizeResume(parsedResume);
         } catch (error) {
@@ -180,16 +202,7 @@ export function ResumeProvider({ children }) {
     */
 
     const setTemplate = (templateId) => {
-        const validTemplates = [
-            "modern",
-            "classic",
-            "minimal",
-            "professional",
-            "creative",
-            "executive",
-        ];
-
-        if (!validTemplates.includes(templateId)) {
+        if (!VALID_TEMPLATES.includes(templateId)) {
             console.warn(
                 `Invalid resume template: ${templateId}`
             );
@@ -215,7 +228,7 @@ export function ResumeProvider({ children }) {
 
             personalInfo: {
                 ...previous.personalInfo,
-                photo,
+                photo: photo || "",
             },
         }));
     };
@@ -258,7 +271,6 @@ export function ResumeProvider({ children }) {
     };
 
     const removeSection = (section) => {
-        // Personal information cannot be removed.
         if (section === "personalInfo") {
             return;
         }
@@ -289,7 +301,6 @@ export function ResumeProvider({ children }) {
 
     const resetResume = () => {
         setResume(initialResume);
-
         localStorage.removeItem(STORAGE_KEY);
     };
 

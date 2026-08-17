@@ -14,7 +14,8 @@ export default function PersonalInfo() {
     const {
         resume,
         updatePersonalInfo,
-        updateResume,
+        setPhoto,
+        removePhoto,
     } = useResume();
 
     const fileInputRef = useRef(null);
@@ -47,15 +48,7 @@ export default function PersonalInfo() {
         const reader = new FileReader();
 
         reader.onload = () => {
-            updateResume(
-                "photo",
-                reader.result
-            );
-
-            updateResume(
-                "photoEnabled",
-                true
-            );
+            setPhoto(reader.result);
         };
 
         reader.readAsDataURL(file);
@@ -63,9 +56,8 @@ export default function PersonalInfo() {
         event.target.value = "";
     };
 
-    const removePhoto = () => {
-        updateResume("photo", "");
-    };
+    const currentPhoto =
+        personalInfo.photo || "";
 
     return (
         <section className="personal-info">
@@ -82,9 +74,9 @@ export default function PersonalInfo() {
 
             <div className="personal-info__photo">
                 <div className="personal-info__photo-preview">
-                    {resume.photo ? (
+                    {currentPhoto ? (
                         <img
-                            src={resume.photo}
+                            src={currentPhoto}
                             alt="Profile"
                         />
                     ) : (
@@ -108,12 +100,12 @@ export default function PersonalInfo() {
                             }
                         >
                             <Upload size={14} />
-                            {resume.photo
+                            {currentPhoto
                                 ? "Change Photo"
                                 : "Upload Photo"}
                         </button>
 
-                        {resume.photo && (
+                        {currentPhoto && (
                             <button
                                 type="button"
                                 className="personal-info__remove-photo"

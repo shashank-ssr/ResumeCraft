@@ -5,11 +5,12 @@ import { useResume } from "../../context/ResumeContext";
 export default function PhotoUpload() {
     const {
         resume,
-        updatePhoto,
+        setPhoto,
+        removePhoto,
     } = useResume();
 
     const photoTemplates = [
-        "creative-photo",
+        "creative",
         "modern-photo",
     ];
 
@@ -42,7 +43,7 @@ export default function PhotoUpload() {
         const reader = new FileReader();
 
         reader.onload = () => {
-            updatePhoto(reader.result);
+            setPhoto(reader.result);
         };
 
         reader.readAsDataURL(file);
@@ -89,9 +90,7 @@ export default function PhotoUpload() {
                     <button
                         type="button"
                         className="photo-upload__remove"
-                        onClick={() =>
-                            updatePhoto("")
-                        }
+                        onClick={removePhoto}
                     >
                         <Trash2 size={15} />
                         Remove
