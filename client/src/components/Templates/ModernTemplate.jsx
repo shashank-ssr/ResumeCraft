@@ -3,8 +3,6 @@ import {
     Phone,
     MapPin,
     Globe,
-    Linkedin,
-    Github,
 } from "lucide-react";
 
 import TemplateContent from "./TemplateContent";
@@ -37,20 +35,17 @@ export default function ModernTemplate({ resume }) {
         },
         {
             value: personalInfo.linkedin,
-            icon: Linkedin,
+            icon: Globe,
         },
         {
             value: personalInfo.github,
-            icon: Github,
+            icon: Globe,
         },
     ].filter((item) => item.value);
 
     return (
         <div className="resume-template template-modern">
-            {/* =====================================================
-                HEADER
-            ===================================================== */}
-
+            {/* Header */}
             <header className="modern-header">
                 <div className="modern-header__accent" />
 
@@ -95,10 +90,7 @@ export default function ModernTemplate({ resume }) {
                 </div>
             </header>
 
-            {/* =====================================================
-                RESUME CONTENT
-            ===================================================== */}
-
+            {/* Resume Content */}
             <main className="modern-content">
                 <TemplateContent
                     resume={resume}

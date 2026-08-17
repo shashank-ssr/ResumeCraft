@@ -3,8 +3,6 @@ import {
     Phone,
     MapPin,
     Globe,
-    Linkedin,
-    Github,
 } from "lucide-react";
 
 import TemplateContent from "./TemplateContent";
@@ -37,11 +35,11 @@ export default function ProfessionalTemplate({ resume }) {
         },
         {
             value: personalInfo.linkedin,
-            icon: Linkedin,
+            icon: Globe,
         },
         {
             value: personalInfo.github,
-            icon: Github,
+            icon: Globe,
         },
     ].filter((item) => item.value);
 
